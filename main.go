@@ -43,7 +43,11 @@ func main() {
 }
 
 func fetchURL(url string) ([]byte, error) {
-	resp, err := http.Get(url)
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+
+	resp, err := client.Get(url)
 	if err != nil{
 		return nil, err
 	}
