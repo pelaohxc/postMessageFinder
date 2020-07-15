@@ -65,7 +65,6 @@ func fetchURL(url string, headers arrayFlags) ([]byte, error) {
 		req.Header.Add(h[0], h[1])
 	}
 
-	fmt.Printf("[+] Checking %s\n", url)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil{
 		return nil, err
@@ -76,6 +75,7 @@ func fetchURL(url string, headers arrayFlags) ([]byte, error) {
 }
 
 func checkPostMessage(bytes []byte, url string){
+	fmt.Printf("[+] Checking %s\n", url)
 	body := string(bytes)
 	lbody := strings.ToLower(body)
 	abody := strings.Split(lbody, "\n")
