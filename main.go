@@ -59,9 +59,9 @@ func worker(url string, headers arrayFlags, ctx context.Context, wg *sync.WaitGr
 		if debug_on{
 			fmt.Printf(WarningColor, err.Error()+"\n")
 		}
-		return
+	}else{
+		checkPostMessage(data, url)
 	}
-	checkPostMessage(data, url)
 }
 
 func fetchURL(url string, headers arrayFlags, ctx context.Context) ([]byte, error) {
