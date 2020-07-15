@@ -6,13 +6,13 @@ A tool that checks if a set of urls contains one or more postMessage functions o
 
 ---
 
-# Instalation
+# Installation
 
 ``` go get github.com/pelaohxc/postMessageFinder ```
 
 ---
 
-#Usage
+# Usage
 
 ``` ./postMessageFinder -i urls.txt ```
 
