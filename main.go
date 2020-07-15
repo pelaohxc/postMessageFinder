@@ -30,13 +30,13 @@ func main() {
 	for i:=0;i<len(urls);i++{
 		wg.Add(1)
 		go func(i int) {
+			defer wg.Done()
 			url := urls[i]
 			data, err := fetchURL(url)
 			if err != nil{
 				return
 			}
 			checkPostMessage(data, url)
-			defer wg.Done()
 		}(i)
 	}
 	wg.Wait()
