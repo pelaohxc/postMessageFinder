@@ -1,6 +1,6 @@
 # postMessageFinder v1.2.3 release
 
-by [@xpl0ited1](https://www.twitter.com/xploited1)
+by [@xpl0ited1](https://www.twitter.com/xpl0ited1)
 
 A tool that checks if a set of urls contains one or more postMessage functions or eventhandlers
 
@@ -29,4 +29,4 @@ Usage of postMessageFinder:
 ---
 With :heart: from [cntr0llz](https://www.cntr0llz.com) team!
 
-If you wish to contribute you can reach me on twitter: [@xpl0ited1](https://www.twitter.com/xploited1)
+If you wish to contribute you can reach me on twitter: [@xpl0ited1](https://www.twitter.com/xpl0ited1)
