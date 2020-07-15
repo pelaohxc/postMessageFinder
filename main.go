@@ -21,12 +21,9 @@ const (
 )
 
 func main() {
-	filePtr := flag.String("i", "urls.txt", "Path to file containing urls to test")
+	filepath := flag.String("i", "urls.txt", "Path to file containing urls to test")
 	flag.Parse()
-
-	path := *filePtr
-	urls := getUrlsFromFile(path)
-	fmt.Println(len(urls))
+	urls := getUrlsFromFile(string(*filepath))
 
 	var wg sync.WaitGroup
 
