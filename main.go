@@ -25,6 +25,10 @@ const (
 
 type arrayFlags []string
 
+var (
+	debug_on bool = false
+)
+
 func main() {
 	var headers arrayFlags
 	filepath := flag.String("i", "urls.txt", "Path to file containing urls to test")
@@ -33,28 +37,31 @@ func main() {
 	flag.Parse()
 	urls := getUrlsFromFile(string(*filepath))
 
-	fmt.Println(len(urls))
+	if bool(*debug){
+		debug_on = true
+	}
 
 	var wg sync.WaitGroup
 	ctx := context.Background()
 
 	for i:=0;i<len(urls);i++{
 		wg.Add(1)
-		go func(i int, headers arrayFlags, ctx context.Context) {
-			defer wg.Done()
-			url := urls[i]
-			data, err := fetchURL(url ,headers, ctx)
-			if err != nil{
-				if bool(*debug){
-					fmt.Printf(WarningColor, err.Error()+"\n")
-				}
-				return
-			}
-			checkPostMessage(data, url)
-		}(i, headers, ctx)
+		go worker(urls[i], headers, ctx, &wg)
 	}
 	wg.Wait()
 	fmt.Println("[+] Done")
+}
+
+func worker(url string, headers arrayFlags, ctx context.Context, wg *sync.WaitGroup){
+	defer wg.Done()
+	data, err := fetchURL(url ,headers, ctx)
+	if err != nil{
+		if debug_on{
+			fmt.Printf(WarningColor, err.Error()+"\n")
+		}
+		return
+	}
+	checkPostMessage(data, url)
 }
 
 func fetchURL(url string, headers arrayFlags, ctx context.Context) ([]byte, error) {
