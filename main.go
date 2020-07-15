@@ -38,6 +38,7 @@ func main() {
 		go func(i int, headers arrayFlags) {
 			defer wg.Done()
 			url := urls[i]
+			fmt.Printf("[+] Checking %s\n", url)
 			data, err := fetchURL(url ,headers)
 			if err != nil{
 				return
