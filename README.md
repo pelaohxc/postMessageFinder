@@ -27,3 +27,6 @@ Usage of /tmp/go-build183044205/b001/exe/main:
 ![example](https://github.com/pelaohxc/postMessageFinder/raw/master/example.png)
 
 ---
+With :heart: from [cntr0llz](https://www.cntr0llz.com) team!
+
+If you wish to contribute you can reach me on twitter: [@xpl0ited1](https://www.twitter.com/xploited1)
