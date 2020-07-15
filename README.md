@@ -1,4 +1,4 @@
-# postMessageFinder v1.0
+# postMessageFinder v0.1 pre-release
 
 by [@xpl0ited1](https://www.twitter.com/xploited1)
 
