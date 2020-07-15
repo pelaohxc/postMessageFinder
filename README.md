@@ -17,7 +17,7 @@ A tool that checks if a set of urls contains one or more postMessage functions o
 ``` ./postMessageFinder -i urls.txt ```
 
 ``` 
-Usage of /tmp/go-build183044205/b001/exe/main:
+Usage of postMessageFinder:
   -H value
         Headers ex: -H='Cookie: PHPSESSID=shjhjdgvbhjhvnv'
   -i string
