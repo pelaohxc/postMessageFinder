@@ -17,9 +17,11 @@ A tool that checks if a set of urls contains one or more postMessage functions o
 ``` ./postMessageFinder -i urls.txt ```
 
 ``` 
-Usage of ./postmessage:
+Usage of /tmp/go-build183044205/b001/exe/main:
+  -H value
+        Headers ex: -H='Cookie: PHPSESSID=shjhjdgvbhjhvnv'
   -i string
-        Path to file containing urls to test (default "urls.txt") 
+        Path to file containing urls to test (default "urls.txt")
 ```
 
 ![example](https://github.com/pelaohxc/postMessageFinder/raw/master/example.png)

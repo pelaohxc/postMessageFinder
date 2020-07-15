@@ -5,12 +5,13 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"context"
 	"log"
 	"net/http"
 	"os"
 	"strings"
-	"sync"
 	"time"
+	"sync"
 )
 
 const (
@@ -21,8 +22,12 @@ const (
 	DebugColor   = "\033[0;36m%s\033[0m"
 )
 
+type arrayFlags []string
+
 func main() {
+	var headers arrayFlags
 	filepath := flag.String("i", "urls.txt", "Path to file containing urls to test")
+	flag.Var(&headers, "H" ,"Headers ex: -H='Cookie: PHPSESSID=shjhjdgvbhjhvnv'")
 	flag.Parse()
 	urls := getUrlsFromFile(string(*filepath))
 
@@ -30,28 +35,41 @@ func main() {
 
 	for i:=0;i<len(urls);i++{
 		wg.Add(1)
-		go func(i int) {
+		go func(i int, headers arrayFlags) {
 			defer wg.Done()
 			url := urls[i]
-			data, err := fetchURL(url)
+			data, err := fetchURL(url ,headers)
 			if err != nil{
 				return
 			}
 			checkPostMessage(data, url)
-		}(i)
+		}(i, headers)
 	}
 	wg.Wait()
 }
 
-func fetchURL(url string) ([]byte, error) {
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
-
-	resp, err := client.Get(url)
+func fetchURL(url string, headers arrayFlags) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil{
 		return nil, err
 	}
+
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(5 * time.Second))
+	defer cancel()
+
+	req.WithContext(ctx)
+
+	for _, header := range headers{
+		header = strings.ReplaceAll(header, " ", "")
+		h := strings.Split(header, ":")
+		req.Header.Add(h[0], h[1])
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil{
+		return nil, err
+	}
+	defer resp.Body.Close()
 	bytes, _ := ioutil.ReadAll(resp.Body)
 	return bytes, nil
 }
@@ -112,4 +130,13 @@ func getUrlsFromFile(path string) []string {
 		urls = append(urls, scanner.Text())
 	}
 	return urls
+}
+
+func (i *arrayFlags) String() string {
+	return ""
+}
+
+func (i *arrayFlags) Set(value string) error {
+	*i = append(*i, value)
+	return nil
 }
