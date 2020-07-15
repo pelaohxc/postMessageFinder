@@ -5,13 +5,14 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"context"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 	"sync"
+	"context"
+	"crypto/tls"
 )
 
 const (
@@ -27,34 +28,42 @@ type arrayFlags []string
 func main() {
 	var headers arrayFlags
 	filepath := flag.String("i", "urls.txt", "Path to file containing urls to test")
+	debug := flag.Bool("d", false, "Debug, ex: -d=true")
 	flag.Var(&headers, "H" ,"Headers ex: -H='Cookie: PHPSESSID=shjhjdgvbhjhvnv'")
 	flag.Parse()
 	urls := getUrlsFromFile(string(*filepath))
 
+	fmt.Println(len(urls))
+
 	var wg sync.WaitGroup
+	ctx := context.Background()
 
 	for i:=0;i<len(urls);i++{
 		wg.Add(1)
-		go func(i int, headers arrayFlags) {
+		go func(i int, headers arrayFlags, ctx context.Context) {
 			defer wg.Done()
 			url := urls[i]
-			data, err := fetchURL(url ,headers)
+			data, err := fetchURL(url ,headers, ctx)
 			if err != nil{
+				if bool(*debug){
+					fmt.Printf(WarningColor, err.Error()+"\n")
+				}
 				return
 			}
 			checkPostMessage(data, url)
-		}(i, headers)
+		}(i, headers, ctx)
 	}
 	wg.Wait()
+	fmt.Println("[+] Done")
 }
 
-func fetchURL(url string, headers arrayFlags) ([]byte, error) {
+func fetchURL(url string, headers arrayFlags, ctx context.Context) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil{
 		return nil, err
 	}
 
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(5 * time.Second))
+	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(5 * time.Second))
 	defer cancel()
 
 	req.WithContext(ctx)
@@ -65,17 +74,27 @@ func fetchURL(url string, headers arrayFlags) ([]byte, error) {
 		req.Header.Add(h[0], h[1])
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	client := http.DefaultClient
+	client.Transport = tr
+	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+
+	resp, err := client.Do(req)
 	if err != nil{
 		return nil, err
 	}
-	defer resp.Body.Close()
+	//defer resp.Body.Close()
 	bytes, _ := ioutil.ReadAll(resp.Body)
 	return bytes, nil
 }
 
 func checkPostMessage(bytes []byte, url string){
-	fmt.Printf("[+] Checking %s\n", url)
+	fmt.Printf("[*] Checking %s\n", url)
 	body := string(bytes)
 	lbody := strings.ToLower(body)
 	abody := strings.Split(lbody, "\n")
